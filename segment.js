@@ -11,7 +11,7 @@ function Segment(width, height, color){
   this.rotation = 0;
   this.scaleX = 1;
   this.scaleY = 1;
-  this.color = (color === undefined) ? "#ffffff" : color;
+  this.color = (color === undefined) ? "#ffe0bd" : color;
   this.lineWidth = 1;
 }
 
@@ -45,12 +45,12 @@ Segment.prototype.draw = function(context){
   }
 
   context.beginPath();
-  context.arc(0,0,2,0,(MATH.PI * 2),true);
+  context.arc(0,0,2,0,(Math.PI * 2),true);
   context.closePath();
   context.stroke();
 
   context.beginPath();
-  context.arc(this.width,0,2,0,(MATH.PI * 2),true);
+  context.arc(this.width,0,2,0,(Math.PI * 2),true);
   context.closePath();
   context.stroke();
 

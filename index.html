@@ -1,72 +1,93 @@
 <!doctype html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <title>Bouncy Balls</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-<canvas id="canvas" width="400" height="400"></canvas>
-
-<script src="ball3d.js"></script>
-<script src="main.js"></script>
-<script>
-    window.onload = function () {
-        var canvas = document.getElementById('canvas'),
+    <head>
+        <meta charset="utf-8">
+        <title>Walk</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <header>Simple Animation Demo --- Running</header>
+        <canvas id="canvas" width="400" height="500" ></canvas>
+        <script src="segment.js"></script>
+        <script>
+            window.onload = function(){
+              var canvas = document.getElementById('canvas'),
                 context = canvas.getContext('2d'),
-                balls = [],
-                numBalls = 150,
-                fl = 250,
-                vpX = canvas.width / 2,
-                vpY = canvas.height / 2,
-                gravity = 0.2,
-                floor = 200,
-                bounce = -0.6;
-        for (var ball, i = 0; i < numBalls; i++) {
-            ball = new Ball3d(3, Math.random() * 0xffffff);
-            ball.ypos = -100;
-            ball.vx = Math.random() * 6 - 3;
-            ball.vy = Math.random() * 6 - 3;
-            ball.vz = Math.random() * 6 - 3;
-            balls.push(ball);
-        }
-        function move (ball) {
-            ball.vy += gravity;
-            ball.xpos += ball.vx;
-            ball.ypos += ball.vy;
-            ball.zpos += ball.vz;
+                segment_body = new Segment(100, 30),
+                arm0 = new Segment(70,20),
+                arm1 = new Segment(60,15),
+                arm2 = new Segment(70,20),
+                arm3 = new Segment(60,15),
+                segment0 = new Segment(100, 30),
+                segment1 = new Segment(100, 20),
+                segment2 = new Segment(100, 30),
+                segment3 = new Segment(100, 20);
+              var cycle = 0,
+                offSet = -Math.PI / 2;   //initial angle of legs
 
-            if (ball.ypos > floor) {
-                ball.ypos = floor;
-                ball.vy *= bounce;
-            }
-            if (ball.zpos > -fl) {
-                var scale = fl / (fl + ball.zpos);
-                ball.scaleX = ball.scaleY = scale;
-                ball.x = vpX + ball.xpos * scale;
-                ball.y = vpY + ball.ypos * scale;
-                ball.visible = true;
-            } else {
-                ball.visible = false;
-            }
-        }
-        function zSort (a, b) {
-            return (b.zpos - a.zpos);
-        }
+              segment_body.x = 200;
+              segment_body.y = 190;
+              segment_body.rotation = Math.PI /2;
 
-        function draw (ball) {
-            if (ball.visible) {
-                ball.draw(context);
-            }
-        }
-        (function drawFrame () {
-            window.requestAnimationFrame(drawFrame, canvas);
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            balls.forEach(move);
-            balls.sort(zSort);
-            balls.forEach(draw);
-        }());
-    };
-</script>
-</body>
+              arm0.x = 200;                     //joint arms
+              arm0.y = 190;
+              arm1.x = arm0.getPin().x;
+              arm1.y = arm0.getPin().y;
+
+              arm2.x = 200;
+              arm2.y = 190;
+              arm3.x = arm2.getPin().x;
+              arm3.y = arm2.getPin().y;
+
+              segment0.x = 200;
+              segment0.y = 290;
+              segment1.x = segment0.getPin().x;     //joint legs
+              segment1.y = segment0.getPin().y;
+
+              segment2.x = 200;
+              segment2.y = 290;
+              segment3.x = segment2.getPin().x;
+              segment3.y = segment2.getPin().y;
+
+              function walk(arm1, arm2, seg_1, seg_2, cyc){
+                angle0 = (Math.sin(cyc)*45 + 90) * Math.PI / 180;
+                angle1 = (Math.sin(cyc + offSet)*45 + 45) * Math.PI / 180;
+
+                seg_1.rotation = angle0;
+                seg_2.rotation = seg_1.rotation + angle1;
+                arm1.rotation = Math.PI - angle0;
+                arm2.rotation = 4*Math.PI / 9  + arm1.rotation + Math.PI;
+                seg_2.x = seg_1.getPin().x;
+                seg_2.y = seg_1.getPin().y;
+                arm2.x = arm1.getPin().x;
+                arm2.y = arm1.getPin().y;
+              }
+
+              (function drawFrame(){
+                window.requestAnimationFrame(drawFrame, canvas);
+                context.clearRect(0,0,canvas.width,canvas.height);
+                context.beginPath();
+                context.arc(200, 135, 30, 0, 2*Math.PI);
+                context.fillStyle = "#ffe0bd";
+                context.fill();
+                context.stroke();
+
+                cycle += 0.08;
+                walk(arm0, arm1, segment0,segment1,cycle);
+                walk(arm2, arm3, segment2,segment3,cycle+Math.PI);
+
+                arm0.draw(context);
+                arm1.draw(context);
+                segment_body.draw(context);
+                arm2.draw(context);
+                arm3.draw(context);
+                segment0.draw(context);
+                segment1.draw(context);
+                segment2.draw(context);
+                segment3.draw(context);
+              }());
+
+             };
+        </script>
+    </body>
 </html>
