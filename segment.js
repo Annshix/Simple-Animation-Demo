@@ -15,7 +15,8 @@ function Segment(width, height, color){
   this.lineWidth = 1;
 }
 
-Segment.prototype.draw(context){
+Segment.prototype.draw = function(context){
+
   var h = this.height,
     d = this.width + h,
     r = h/2;    //leg radius
@@ -54,7 +55,7 @@ Segment.prototype.draw(context){
   context.stroke();
 
   context.restore();
-}
+};
 
 Segment.prototype.getPin = function(){
   return{
